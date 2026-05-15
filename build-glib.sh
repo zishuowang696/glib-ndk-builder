@@ -10,6 +10,7 @@ NDK_VERSION="r28"
 GLIB_VERSION="2.82.5"
 LIBFFI_VERSION="3.4.7"
 GETTEXT_VERSION="0.23.1"
+LIBICONV_VERSION="1.17"
 
 TARGET_ARCH="aarch64"
 TARGET_HOST="${TARGET_ARCH}-linux-android"
@@ -54,6 +55,8 @@ download "https://github.com/libffi/libffi/releases/download/v${LIBFFI_VERSION}/
                                                                          "${SRC_DIR}/libffi-${LIBFFI_VERSION}.tar.gz"
 download "https://ftp.gnu.org/pub/gnu/gettext/gettext-${GETTEXT_VERSION}.tar.gz" \
                                                                          "${SRC_DIR}/gettext-${GETTEXT_VERSION}.tar.gz"
+download "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz" \
+                                                                         "${SRC_DIR}/libiconv-${LIBICONV_VERSION}.tar.gz"
 download "https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz" \
                                                                          "${SRC_DIR}/glib-${GLIB_VERSION}.tar.xz"
 
@@ -157,6 +160,51 @@ cd gettext-runtime
 
 make -j"${JOBS}"
 make install
+
+# ============================================================
+# Build libiconv
+# ============================================================
+echo ""
+echo "========================================"
+echo "Building libiconv ${LIBICONV_VERSION}..."
+echo "========================================"
+cd "${BUILD_DIR}"
+rm -rf "libiconv-${LIBICONV_VERSION}"
+tar xf "${SRC_DIR}/libiconv-${LIBICONV_VERSION}.tar.gz"
+cd "libiconv-${LIBICONV_VERSION}"
+
+./configure \
+    --host="${TARGET_TRIPLE}" \
+    --prefix="${PREFIX}" \
+    --enable-shared \
+    --disable-static \
+    CC="${CC}" \
+    CXX="${CXX}" \
+    LD="${LD}" \
+    AR="${AR}" \
+    RANLIB="${RANLIB}" \
+    STRIP="${STRIP}" \
+    NM="${NM}" \
+    CFLAGS="${CFLAGS}" \
+    CXXFLAGS="${CXXFLAGS}" \
+    LDFLAGS="${LDFLAGS}"
+
+make -j"${JOBS}"
+make install
+
+# libiconv does not ship a .pc file; create one so meson can find it
+cat > "${PREFIX}/lib/pkgconfig/iconv.pc" << EOF
+prefix=${PREFIX}
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: iconv
+Description: GNU charset conversion library
+Version: ${LIBICONV_VERSION}
+Libs: -L\${libdir} -liconv
+Cflags: -I\${includedir}
+EOF
 
 # ============================================================
 # Build GLib
