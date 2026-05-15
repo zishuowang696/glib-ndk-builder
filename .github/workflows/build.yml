@@ -50,6 +50,23 @@ jobs:
           name: glib-android-aarch64
           path: output
 
+      - name: Ensure GitHub Pages is enabled
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "==> Checking Pages status..."
+          if gh api repos/${{ github.repository }}/pages --silent 2>/dev/null; then
+            echo "Pages already enabled."
+          else
+            echo "Enabling Pages (GitHub Actions source)..."
+            gh api repos/${{ github.repository }}/pages \
+              --method POST \
+              --field build_type=workflow \
+              --silent
+            echo "Pages enabled. Waiting 10s for propagation..."
+            sleep 10
+          fi
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
