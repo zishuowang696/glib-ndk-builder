@@ -167,6 +167,10 @@ echo "Building GLib ${GLIB_VERSION}..."
 echo "========================================"
 
 # Write meson cross-compile file
+# Convert space-separated flags to meson string arrays
+cflags_meson="$(printf "'%s', " ${CFLAGS})"
+cxxflags_meson="$(printf "'%s', " ${CXXFLAGS})"
+ldflags_meson="$(printf "'%s', " ${LDFLAGS})"
 cat > "${BUILD_DIR}/meson-cross-android.txt" << EOF
 [binaries]
 c = '${CC}'
@@ -176,10 +180,10 @@ strip = '${STRIP}'
 pkg-config = 'pkg-config'
 
 [built-in options]
-c_args = ['${CFLAGS}']
-c_link_args = ['${LDFLAGS}']
-cpp_args = ['${CXXFLAGS}']
-cpp_link_args = ['${LDFLAGS}']
+c_args = [${cflags_meson}]
+c_link_args = [${ldflags_meson}]
+cpp_args = [${cxxflags_meson}]
+cpp_link_args = [${ldflags_meson}]
 
 [host_machine]
 system = 'android'
