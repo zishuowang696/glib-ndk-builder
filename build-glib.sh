@@ -84,8 +84,8 @@ OBJCOPY="${TOOLCHAIN}/bin/llvm-objcopy"
 READELF="${TOOLCHAIN}/bin/llvm-readelf"
 AS="${TOOLCHAIN}/bin/${TARGET_TRIPLE}-clang"
 
-CFLAGS="-O2 -fPIC -DANDROID"
-CXXFLAGS="-O2 -fPIC -DANDROID"
+CFLAGS="-O2 -fPIC -DANDROID -I${PREFIX}/include"
+CXXFLAGS="-O2 -fPIC -DANDROID -I${PREFIX}/include"
 LDFLAGS="-L${PREFIX}/lib"
 
 # ============================================================
