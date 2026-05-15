@@ -173,7 +173,7 @@ c = '${CC}'
 cpp = '${CXX}'
 ar = '${AR}'
 strip = '${STRIP}'
-pkgconfig = 'pkg-config'
+pkg-config = 'pkg-config'
 
 [built-in options]
 c_args = ['${CFLAGS}']
@@ -208,7 +208,6 @@ meson setup builddir \
     --prefix="${PREFIX}" \
     --libdir=lib \
     --default-library=shared \
-    -Diconv=auto \
     -Dlibmount=disabled \
     -Dman=false \
     -Dgtk_doc=false \
